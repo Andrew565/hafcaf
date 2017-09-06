@@ -1,0 +1,54 @@
+<html>
+
+<head>
+  <title>My Awesome Hafcaf App</title>
+  <link rel="stylesheet" href="hafcaf.css">
+</head>
+
+<body>
+  <nav role="navigation">
+    <ul id="nav-list">
+      <li>
+        <a href="#home">Home</a>
+      </li>
+      <li>
+        <a href="#another-view">Page 2</a>
+      </li>
+    </ul>
+  </nav>
+  <main id="main-container" role="main">
+    <div id="another-view">
+      <h1>Page 2</h1>
+      <p>This is another view.</p>
+    </div>
+    <div id="home">
+      <h1>Home</h1>
+      <p>Static content is the best content.</p>
+    </div>
+  </main>
+  <script src="hafcaf.js" type="text/javascript"></script>
+  <script type="text/javascript">
+    var anotherView = {
+      rendered: function () {
+        console.log('this view is "another-view"');
+      }
+    };
+    hafcaf.addRoute('another-view', anotherView);
+
+    var exampleDynamicView = {
+      linkText: "Page 3",
+      innerHTML: "<h1>Page 3</h1><p>This page was added dynamically at run-time. It could have been loaded via fetch or AJAX if desired.</p><button id='backHomeButton'>Go back to Home page</button>",
+      rendered: function () {
+        console.log('page 3 rendered');
+
+        // demo of adding event listeners
+        document.getElementById('backHomeButton').addEventListener('click', function () {
+          window.location.hash = 'home';
+        });
+      }
+    };
+    hafcaf.addRoute('page-3', exampleDynamicView);
+  </script>
+</body>
+
+</html>
