@@ -12,11 +12,17 @@
       this.routes[id] = options;
 
       // Add the route to the navigation menu if linkText provided
-      if (options.linkText) {
+      if (options.linkHTML) {
         var newEl = document.createElement("li");
         var newLink = document.createElement("a");
         newLink.href = "#" + id;
-        newLink.innerHTML = options.linkText;
+        newLink.innerHTML = options.linkHTML;
+
+        // Add classes to the link, if present
+        if (options.className) {
+          newLink.classList.add(options.className);
+        }
+
         newEl.appendChild(newLink);
         document.getElementById("nav-list").appendChild(newEl);
       }
