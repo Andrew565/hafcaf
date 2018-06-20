@@ -1,7 +1,7 @@
+var hafcaf = null;
+
 (function() {
-  var hafcaf = {
-    routes: {},
-    addRoute: function(id, options) {
+  var hafcafLibrary = {
       // Check if a route already exists with the given ID
       if (this.routes[id] !== undefined) {
         console.error('A route with the ID "' + id + '" already exists.');
@@ -65,8 +65,8 @@
   };
 
   // Add hafcaf to the window object so it becomes globally accessible
-  window.hafcaf = hafcaf;
+  hafcaf = hafcafLibrary;
 })();
 
 // Once the script has instantiated hafcaf, initialize it
-hafcaf.init();
+hafcaf && hafcaf.init();
