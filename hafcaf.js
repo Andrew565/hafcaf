@@ -1,7 +1,5 @@
-var hafcaf = null;
-
-(function() {
-  var hafcafLibrary = {
+(function(window) {
+  var hafcaf = {
     routes: [],
     config: {
       activeClass: "active", // By default, will add the 'active' class to the link for the current route
@@ -19,7 +17,7 @@ var hafcaf = null;
 
       // Check if a route already exists with the given ID
       if (this.routes[id] !== undefined) {
-        console.error('A route with the ID "' + id + '" already exists.');
+        console.error(`A route with the ID ${id}already exists.`);
         return false;
       }
 
@@ -35,7 +33,7 @@ var hafcaf = null;
         }
 
         var newLink = document.createElement("a");
-        newLink.href = "#" + id;
+        newLink.href = `#${id}`;
         newLink.innerHTML = options.linkLabel;
 
         // Add classes to the link, if present
@@ -127,7 +125,7 @@ var hafcaf = null;
 
       // Add a global listener for 'hashchange', since this framework relies on hash-based routing
       window.addEventListener("hashchange", function() {
-        hafcaf.routeChange();
+        window["hafcaf"].routeChange();
       });
 
       // Set hash to default if no hash
@@ -140,8 +138,8 @@ var hafcaf = null;
   };
 
   // Add hafcaf to the window object so it becomes globally accessible
-  hafcaf = hafcafLibrary;
-})();
+  window["hafcaf"] = hafcaf;
+})(window);
 
 // Once the script has instantiated hafcaf, initialize it
-hafcaf && hafcaf.init();
+window["hafcaf"] && window["hafcaf"].init();
