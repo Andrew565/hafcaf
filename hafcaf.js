@@ -45,20 +45,25 @@
         document.getElementById(this.config.navID).appendChild(newEl);
       }
 
-      // Create a new page
-      var newEl = document.createElement(this.config.pageTag);
-      newEl.id = id;
+      // Check if the ID already exists in the DOM (i.e. adding an existing page to the dom)
+      const doesNotExist = document.getElementById(id) === null;
 
-      // Add classes to the page, if present
-      if (options.pageClass || this.config.pageClass) {
-        newEl.classList.add(options.pageClass || this.config.pageClass);
+      if (doesNotExist) {
+        // Create a new page
+        var newEl = document.createElement(this.config.pageTag);
+        newEl.id = id;
+
+        // Add classes to the page, if present
+        if (options.pageClass || this.config.pageClass) {
+          newEl.classList.add(options.pageClass || this.config.pageClass);
+        }
+
+        // If this new route provides html, add it to the DOM, else use the loadingHTML
+        newEl.innerHTML = options.innerHTML || this.config.loadingHTML;
+
+        // Add page to the DOM
+        document.getElementById(this.config.mainID).appendChild(newEl);
       }
-
-      // If this new route provides html, add it to the DOM, else use the loadingHTML
-      newEl.innerHTML = options.innerHTML || this.config.loadingHTML;
-
-      // Add page to the DOM
-      document.getElementById(this.config.mainID).appendChild(newEl);
     },
     default: "home",
     updateRoute: function(options) {
