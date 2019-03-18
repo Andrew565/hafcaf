@@ -24,21 +24,21 @@ Don't worry, it's much easier than it sounds. Here's an example. Given this incr
 
 ```html
 <main>
-	<section id="section1">
-		I'm the content for section one.
-		<a href="#section2">Section Two</a>
-		<a href="#home">Home</a>
-	</section>
+  <section id="section1">
+    I'm the content for section one.
+    <a href="#section2">Section Two</a>
+    <a href="#home">Home</a>
+  </section>
   <section id="section2">
-		I'm the content for section two.
-		<a href="#section1">Section One</a>
-		<a href="#home">Home</a>
-	</section>
-	<section id="home">
-		I'm the content for the Home page.
-		<a href="#section1">Section One</a>
-		<a href="#section2">Section Two</a>
-	</section>
+    I'm the content for section two.
+    <a href="#section1">Section One</a>
+    <a href="#home">Home</a>
+  </section>
+  <section id="home">
+    I'm the content for the Home page.
+    <a href="#section1">Section One</a>
+    <a href="#section2">Section Two</a>
+  </section>
 </main>
 ```
 
@@ -68,14 +68,14 @@ To add a new page to your site, the only requirements are a container element li
 
 ```html
 <main id="main-container">
-	<div id="second-page">
-		<h1>This is another page</h1>
-		<a href="#home">Go back home</a>
-	</div>
-	<div id="home">
-		<h1>This is my home page</h1>
-		<a href="#second-page">Go to next page</a>
-	</div>
+  <div id="second-page">
+    <h1>This is another page</h1>
+    <a href="#home">Go back home</a>
+  </div>
+  <div id="home">
+    <h1>This is my home page</h1>
+    <a href="#second-page">Go to next page</a>
+  </div>
 </main>
 ```
 
@@ -159,7 +159,7 @@ It may seem like a lot of steps, but it’s easier than you might think. `hafcaf
 
 Note that there’s no extra `DOCTYPE`, `head`, or `body` sections, only the content we want for the third page. This is because we’re going to inject it directly into the existing page, so it doesn’t need all the extra definitions of a normal html page.
 
-Then, in your site’s main JavaScript file (or even in the index.html, if you want), setup the `hafcaf.addRoute()` function similarly to above, but with a few more configuration options specified:
+Then, in your site’s main JavaScript file (or even in the index.html, if you want), setup the `hafcaf.addRoute()` function similarly to above, but with an extra (and optional) `linkLabel` configuration option specified:
 
 ```javascript
 var exampleDynamicView = {
@@ -168,6 +168,46 @@ var exampleDynamicView = {
 };
 
 hafcaf.addRoute(exampleDynamicView);
+```
+
+This `linkLabel` property tells `hafcaf` to add a new entry to the page's menu with the label we specified, "Page 3". This extra property is optional if you want to define your menu a different way, or if you don't have a menu. See the full API section below for all of the configuration options, including how to control how menu items are rendered.
+
+Now that we have reserved a place for the new page, the next step is to go and fetch it from the server. You can use any method you like to do this, but here's how I did on my website. For [andrewthecreator.com](https://andrewthecreator.com), I chose to make all of the pages load dynamically (mostly for the fanciness of it). So I created an array of page objects, then looped over them adding each one in turn to the site.
+
+```javascript
+// Array of page objects to be fetched and processed by hafcaf
+const pages = [
+  { id: "about-me", linkLabel: "<i class='fas fa-address-card'></i>About Me" },
+  { id: "resume", linkLabel: "<i class='far fa-file-alt'></i>My Resumé" },
+  { id: "code", linkLabel: "<i class='fas fa-code'></i>Code" },
+  { id: "case-studies", linkLabel: "<i class='fas fa-glasses'></i>Case Studies" },
+  { id: "articles", linkLabel: "<i class='fas fa-file-invoice'></i>Articles" },
+  { id: "talks", linkLabel: "<i class='fas fa-microphone-alt'></i>Talks" },
+  { id: "games", linkLabel: "<i class='fas fa-dice'></i>Games" },
+  { id: "art", linkLabel: "<i class='fas fa-palette'></i>Art" }
+];
+
+pages.forEach(page => {
+  hafcaf.addRoute(page);
+  fetchPage(page).then(page => hafcaf.updateRoute(page));
+});
+
+// Fetches page contents from the 'pages' directory
+function fetchPage(pageObj) {
+  // lookup relative to the home page the page whose name matches the pageObj id
+  return fetch(`pages/${pageObj.id}.html`)
+    .then(res => res.text()) // process it as text
+    .then(innerHTML => ({ innerHTML, id: pageObj.id })); // return as an object to be processed by updateRoute
+}
+```
+
+If you want to add just a single page, that last part is what you'll need. Here's the simpler version:
+
+```javascript
+fetch("https://yourserver.it/pages/page3.html")
+  .then(response => response.text())
+  .then(innerHTML => ({ innerHTML, id: "page-3" }))
+  .then(page => hafcaf.updateRoute(page));
 ```
 
 ## API
