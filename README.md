@@ -178,10 +178,7 @@ Now that we have reserved a place for the new page, the next step is to go and f
 // Array of page objects to be fetched and processed by hafcaf
 const pages = [
   { id: "about-me", linkLabel: "<i class='fas fa-address-card'></i>About Me" },
-  { id: "resume", linkLabel: "<i class='far fa-file-alt'></i>My Resumé" },
   { id: "code", linkLabel: "<i class='fas fa-code'></i>Code" },
-  { id: "case-studies", linkLabel: "<i class='fas fa-glasses'></i>Case Studies" },
-  { id: "articles", linkLabel: "<i class='fas fa-file-invoice'></i>Articles" },
   { id: "talks", linkLabel: "<i class='fas fa-microphone-alt'></i>Talks" },
   { id: "games", linkLabel: "<i class='fas fa-dice'></i>Games" },
   { id: "art", linkLabel: "<i class='fas fa-palette'></i>Art" }
@@ -201,7 +198,7 @@ function fetchPage(pageObj) {
 }
 ```
 
-If you want to add just a single page, that last part is what you'll need. Here's the simpler version:
+If you want to add just a single page at a time, that last part is what you'll need. Here's the simpler version:
 
 ```javascript
 fetch("https://yourserver.it/pages/page3.html")
@@ -211,6 +208,42 @@ fetch("https://yourserver.it/pages/page3.html")
 ```
 
 ## API
+
+_At long last, the API section!_
+
+### Configuration Options
+
+There are two ways to change the default configuration options. If you want to change only a few options, you can overwrite them individually like this:
+
+`hafcaf.config.pageClass = "prettyPage";`
+
+If you wish to change several options all at once, you can merge your changes like this:
+
+```javascript
+// ES2018 (Doesn't work in Edge or IE browsers)
+const oldConfig = hafcaf.config;
+const newConfig = {(your changes)};
+hafcaf.config = {...oldConfig, newConfig};
+
+// ES6 (Supports Edge 12+, but still not IE)
+// define newConfig like above
+Object.assign(hafcaf.config, newConfig);
+```
+
+Below are the available configuration options along with their default values.
+
+*activeClass: "active"*
+
+Specifies the css classname to be added to the link for the current route. May be a string of multiple classes.
+
+linkClass: null, // Class(es) to add to link 'a' tags
+linkTag: "li", // Which tag to use for link containers
+linkTagClass: null, // Class(es) to add to linkTag tags
+loadingHTML: "<p>Loading...</p>", // Default content while a page is loading
+mainID: "main-container", // ID of the element where pages should be added
+navID: "nav-list", // ID of the element where link tags should be added
+pageClass: null, // Class(es) to add to page containers
+pageTag: "div" // Which tag to use for page containers
 
 ## Licensing
 
