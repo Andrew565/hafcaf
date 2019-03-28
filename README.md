@@ -232,41 +232,16 @@ Object.assign(hafcaf.config, newConfig);
 
 Below are the available configuration options along with their default values.
 
-*activeClass: "active"*
-
-Specifies the css classname to be added to the link for the current route. May be a string of multiple classes.
-
-*linkClass: null*
-
-Class(es) to add to link 'a' tags.
-
-*linkTag: "li"*
-
-Which tag to use for link containers.
-
-*linkTagClass: null*
-
-Class(es) to add to linkTag tags.
-
-*loadingHTML: "<p>Loading...</p>"*
-
-Default content while a page is loading.
-
-*mainID: "main-container"*
-
-ID of the element where pages should be added.
-
-*navID: "nav-list"*
-
-ID of the element where link tags should be added.
-
-*pageClass: null*
-
-Class(es) to add to page containers.
-
-*pageTag: "div"*
-
-Which tag to use for page containers
+| **Option** | **Default Value** | **Description** |
+| **activeClass** | "active" | Specifies the css classname to be added to the link for the current route. May be a string of multiple classes. |
+| **linkClass** | null | Class(es) to add to link 'a' tags.|
+| **linkTag** | "li" | Which tag to use for link containers. |
+| **linkTagClass** | null | Class(es) to add to linkTag tags. |
+| **loadingHTML** | `"<p>Loading...</p>"` | Default content while a page is loading. |
+| **mainID** | "main-container" | ID of the element where pages should be added. |
+| **navID** | "nav-list" | ID of the element where link tags should be added. |
+| **pageClass** | null | Class(es) to add to page containers. |
+| **pageTag** | "div" | Which tag to use for page containers. |
 
 ### hafcaf.addRoute()
 
