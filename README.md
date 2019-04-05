@@ -249,6 +249,12 @@ Below are the available configuration options along with their default values.
 addRoute is the method to use when you wish to add a route for hafcaf to keep track of. Its takes a configuration object, all properties of which are optional except for `id`.
 
 
+#### addRoute Options
+
+**Option** | **Default Value** | **Description**
+--- | --- | ---
+
+
 
 ## Licensing
 
