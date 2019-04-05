@@ -13,6 +13,16 @@
       pageTag: "div" // Which tag to use for page containers
     },
     addRoute: function(options) {
+      /**
+       * @namespace addRouteOptions
+       * @property {string} id  - The identifier to be used for this route.
+       * @property {string} [linkLabel] - What text to use when creating a menu item for this route. A menu item will not be created if a linkLabel is not provided.
+       * @property {string} [linkTagClass] - What css classnames to give to the menu item container for this route.
+       * @property {string} [linkLabelClass] - What css classnames to give to the actual link inside the menu item container for this route.
+       * @prop {string} [pageClass] - What css classnames to give to the page for this route
+       * 
+       */
+    
       let id = options.id;
 
       // Check if a route already exists with the given ID
@@ -24,7 +34,7 @@
       // Add the route and it's options to the collection of routes
       this.routes[id] = options;
 
-      // Add the route to the navigation menu if linkText provided
+      // Add the route to the navigation menu if linkLabel provided
       if (options.linkLabel) {
         var newEl = document.createElement(this.config.linkTag);
 
