@@ -141,7 +141,7 @@ var anotherView = {
 hafcaf.addRoute(anotherView);
 ```
 
-It really is that easy. There are more details on all of the configuration options for the `addRoute` method in the API section below. What we do here is add the ID for the page to the `routes` registry. `hafcaf` internally has a `routeChange` function that will update the navigation links whenever the route changes (e.g. from `#home` to `#another-view`). You only have to add routes that are in addition to the `#home` route, as `hafcaf` assumes you will always have at least that (though the ID of the home route can be changed in the `hafcaf`configuration, see below).
+It really is that easy. There are more details on all of the configuration options for the `addRoute` method in the API section below. What we do here is add the ID for the page to the `routes` registry. `hafcaf` internally has a `routeChange` function that will update the navigation links whenever the route changes (e.g. from `#home` to `#another-view`). You only have to add routes that are in addition to the `#home` route, as `hafcaf` assumes you will always have at least that (though the ID of the home route can be changed in the `hafcaf` configuration, see below).
 
 #### `addRoute` and `updateRoute` with Dynamic Content
 
@@ -246,15 +246,19 @@ Below are the available configuration options along with their default values.
 
 ### hafcaf.addRoute()
 
-addRoute is the method to use when you wish to add a route for hafcaf to keep track of. Its takes a configuration object, all properties of which are optional except for `id`.
-
+addRoute is the method to use when you wish to add a route for hafcaf to keep track of. It takes a configuration object, all properties of which are optional except for `id`.
 
 #### addRoute Options
 
-**Option** | **Default Value** | **Description**
---- | --- | ---
-
-
+**Option** | **Description**
+--- | ---
+**id** | The identifier to be used for this route. **Required**
+**linkLabel** | What text to use when creating a menu item for this route. A menu item will not be created if a linkLabel is not provided.
+**linkTagClass** | What css classnames to give to the menu item container for this route.
+**linkLabelClass** | What css classnames to give to the actual link inside the menu item container for this route.
+**pageClass** | What css classnames to give to the page for this route.
+**innerHTML** | The content of the page. If not provided, will default to config.loadingHTML. Can be set or overwritten later using hafcaf.updateRoute().
+**onRender** | A function which will be called each time this route is rendered (made active). Can include multiple functions within itself, if desired. When composing your onRender, keep in mind to take advantage of the hafcaf.listeners collection, which can be used to hold removeEventListener calls and other functions you would like to run when hafcaf switches away from this route.
 
 ## Licensing
 
@@ -262,8 +266,8 @@ The Unlicense, but if you mention me that'd be nice.
 
 ## Contributing
 
-I'll gladly accept questions, comments, suggestions, and pull requests.
+I'll gladly accept questions, comments, suggestions, and pull requests. Keep in mind that this framework is intended to be used cross-browser, without the need for compilation or transpilation. For this reason, features that are not yet supported by the "big 4" browsers (Chrome, Edge, Firefox, and Mobile Safari/Desktop Safari) are not allowed at this time.
 
 ## Contributors
 
-- [ ] [Andrew Steele](https://github.com/andrew565)
+- [Andrew Steele](https://github.com/andrew565)
