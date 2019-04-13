@@ -1,0 +1,34 @@
+{
+  "name": "hafcaf",
+  "version": "1.0.0",
+  "description": "The no-framework SPA solution; when you only want a little javascript in your app.",
+  "main": "hafcaf-module.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "build-es": "terser hafcaf.js -c -m -o hafcaf.min.js",
+    "build-module": "terser hafcaf-module.js -c -m -o hafcaf-module.min.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Andrew565/hafcaf.git"
+  },
+  "keywords": [
+    "SPA",
+    "css",
+    "navigation",
+    "routing",
+    "javascript",
+    "beginner-friendly"
+  ],
+  "author": "Andrew Steele",
+  "license": "Unlicense",
+  "bugs": {
+    "url": "https://github.com/Andrew565/hafcaf/issues"
+  },
+  "homepage": "https://github.com/Andrew565/hafcaf#readme",
+  "devDependencies": {
+    "terser": "^3.17.0"
+  }
+}
