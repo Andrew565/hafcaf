@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>hafcaf Test</title>
+    <link rel="stylesheet" href="hafcaf.css" />
+  </head>
+  <body>
+    <main id="main-container">
+      <section id="home">
+        <h1>Home</h1>
+        <a href="#counter">Counter Test</a>
+      </section>
+    </main>
+    <script type="text/javascript" src="hafcaf.js"></script>
+    <script type="text/javascript">
+      hafcaf.addRoute({
+        id: "home"
+      });
+      hafcaf.addRoute({
+        id: "counter",
+        innerHTML: "<section><span id='counter__display'>0</span><button id='counter__button'>Add 1</button></sec>",
+        onRender: function() {
+          // storing the counter var globally for simplicity’s sake in this demo
+          window.counter = 0;
+
+          // create the event handler
+          function incrementCounter() {
+            counter++;
+            document.getElementById("counter__display").innerHTML = counter;
+          }
+
+          // setup the listener
+          const button = document.getElementById("counter__button");
+          button.addEventListener("click", incrementCounter, false);
+
+          // create a disposer to remove the event listener on exit
+          const disposer = function() {
+            button.removeEventListener("click", incrementCounter, false);
+          };
+          hafcaf.exitFunctions.push(disposer);
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -4,7 +4,7 @@ _The No-Framework SPA Solution_
 
 ## Introduction
 
-`hafcaf` is an extremely minimal (>2kb) single-page application (SPA) library, designed for people who want to rapidly create websites and apps without having to learn a whole new way to do so.
+`hafcaf` is an extremely minimal (less than 2kb) single-page application (SPA) library, designed for people who want to rapidly create websites and apps without having to learn a whole new way to do so.
 
 There's no complicated DSL (domain-specific language) here, no hoops and loops to jump through to get up and running. If you know plain HTML, CSS, and JavaScript and can follow a tiny bit of instruction, you can be creating a SPA in less than five minutes.
 
@@ -12,9 +12,49 @@ There's no complicated DSL (domain-specific language) here, no hoops and loops t
 - Works as far back as IE 9.
 - Designed to require the use of as little JavaScript as possible.
 - Should play nice with pretty much all CSS frameworks (let me know if you find one that doesn't work and I'll fix it).
-- Can still be used with other JavaScript frameworks if desired - hafcaf can provide the routing.
+- Can still be used with other JavaScript frameworks if desired - hafcaf will provide the routing.
 
 Before I continue, `hafcaf` is heavily inspired by [this article by Heydon Pickering](https://www.smashingmagazine.com/2015/12/reimagining-single-page-applications-progressive-enhancement/).
+
+- [Introduction](#introduction)
+
+- [How the Magic Happens](#how-the-magic-happens)
+
+- [Installation](#installation)
+
+- [Usage](#usage)
+
+  - [Adding to your page](#adding-to-your-page)
+
+  - [Setting up your page](#setting-up-your-page)
+
+- [`hafcaf.js`](#hafcafjs)
+
+  - [Dynamic Page Loading](#dynamic-page-loading)
+
+  - [`addRoute` with Static Content](#addroute-with-static-content)
+
+  - [`addRoute` and `updateRoute` with Dynamic Content](#addroute-and-updateroute-with-dynamic-content)
+
+  - [The `onRender` function and `exitFunctions` collection](#the-onrender-function-and-exitfunctions-collection)
+
+- [API](#api)
+
+  - [Configuration Options](#configuration-options)
+
+  - [hafcaf.addRoute()](#hafcafaddroute)
+
+  - [hafcaf.init()](#hafcafinit)
+
+  - [hafcaf.routeChange()](#hafcafroutechange)
+
+  - [hafcaf.updateRoute()](#hafcafupdateroute)
+
+- [Licensing](#licensing)
+
+- [Contributing](#contributing)
+
+- [Contributors](#contributors)
 
 ### How the Magic Happens
 
@@ -52,11 +92,11 @@ Take the CSS and JS files provided here and stick them in a folder (`npm install
 
 ### Adding to your page
 
+Add the CSS file to your `<head>` using a standard `<link>` like this: `<link rel="stylesheet" href="../path/to/hafcaf.css">`. As you'll see in the next section, `hafcaf`'s routing ability will work without adding the `hafcaf.js` file. If you do choose to add the JS file, add it to the page's `<body>` section before the closing `</body>` tag. I recommend near the bottom, but above any other custom javascript (if that custom code makes use of hafcaf).
+
 `hafcaf` comes in two varieties: one that supports ES6 Modules (`hafcaf-module.min.js`), and one that doesn't (`hafcaf.min.js`). If you need to support Internet Explorer or if you don't want to use ES6 Modules, then go for the non-module code, which will add `hafcaf` to the global scope (I know it's bad practice, but so is supporting IE at this point).
 
 If you use the modular version, you can do `import hafcaf from "../path/to/hafcaf"` or `var hafcaf = require('../path/to/hafcaf');`. Once I get this published to NPM you'll be able to drop the path parts.
-
-Once you've added the CSS file to your `<head></head>` and the JS file somewhere in your body before the closing `</body>` tag, you're ready to start setting up your site/app.
 
 ### Setting up your page
 
@@ -172,7 +212,7 @@ hafcaf.addRoute(exampleDynamicView);
 
 This `linkLabel` property tells `hafcaf` to add a new entry to the page's menu with the label we specified, "Page 3". This extra property is optional if you want to define your menu a different way, or if you don't have a menu. See the full API section below for all of the configuration options, including how to control how menu items are rendered.
 
-Now that we have reserved a place for the new page, the next step is to go and fetch it from the server. You can use any method you like to do this, but here's how I did on my website. For [andrewthecreator.com](https://andrewthecreator.com), I chose to make all of the pages load dynamically (mostly for the fanciness of it). So I created an array of page objects, then looped over them adding each one in turn to the site.
+Now that we have reserved a place for the new page, the next step is to go and fetch it from the server. You can use any method you like to do this, but here's how I did it on my website. For [andrewthecreator.com](https://andrewthecreator.com), I chose to make all of the pages load dynamically (mostly for the fanciness of it). So I created an array of page objects, then looped over them; adding each one, in turn, to the site.
 
 ```javascript
 // Array of page objects to be fetched and processed by hafcaf
@@ -207,6 +247,45 @@ fetch("https://yourserver.it/pages/page3.html")
   .then(page => hafcaf.updateRoute(page));
 ```
 
+### The `onRender` function and `exitFunctions` collection
+
+Whether adding or updating a route, one of the options you can attach to the route is an `onRender` function. This function will be called every time the route is rendered to the screen; i.e. when a link is clicked or other code executed which changes the hash part of the current URL.
+
+The `onRender` function is an excellent place to setup event listeners and to subscribe to pub/sub services or functions such as an Observer Pattern state management library like MobX, a long-polling or server push listener, or a WebSocket-based stream.
+
+For an example, let's imagine a page that has a very simple counting mechanism. There's a button, and a span that shows the value of the counter variable, initially set at “0”. I hope you come up with more creative ideas for your apps. ;)
+
+So here’s the setup. Remember, this can be done statically using `addRoute()` alone, or dynamically with the help of `updateRoute()`.
+
+```javascript
+hafcaf.addRoute({
+  id: "counter",
+  innerHTML: "<section><span id='counter__display'>0</span><button id='counter__button'>Add 1</button></sec>",
+  onRender: function() {
+    // storing the counter var globally for simplicity’s sake in this demo
+    window.counter = 0;
+
+    // create the event handler
+    function incrementCounter() {
+      counter++;
+      document.getElementById("counter__display").innerHTML = counter;
+    }
+
+    // setup the listener
+    const button = document.getElementById("counter__button");
+    button.addEventListener("click", incrementCounter, false);
+
+    // create a disposer to remove the event listener on exit
+    const disposer = function() {
+      button.removeEventListener("click", incrementCounter, false);
+    };
+    hafcaf.exitFunctions.push(disposer);
+  }
+});
+```
+
+That’s all it takes. You just made a SPA without a framework and only one dependency: hafcaf.
+
 ## API
 
 _At long last, the API section!_
@@ -232,33 +311,62 @@ Object.assign(hafcaf.config, newConfig);
 
 Below are the available configuration options along with their default values.
 
-**Option** | **Default Value** | **Description**
---- | --- | ---
-**activeClass** | "active" | Specifies the css classname to be added to the link for the current route. May be a string of multiple classes.
-**linkClass** | null | Class(es) to add to link 'a' tags.
-**linkTag** | "li" | Which tag to use for link containers.
-**linkTagClass** | null | Class(es) to add to linkTag tags.
-**loadingHTML** | `"<p>Loading...</p>"` | Default content while a page is loading.
-**mainID** | "main-container" | ID of the element where pages should be added.
-**navID** | "nav-list" | ID of the element where link tags should be added.
-**pageClass** | null | Class(es) to add to page containers.
-**pageTag** | "div" | Which tag to use for page containers.
+| **Option**       | **Default Value**     | **Description**                                                                                                 |
+| ---------------- | --------------------- | --------------------------------------------------------------------------------------------------------------- |
+| **activeClass**  | "active"              | Specifies the css classname to be added to the link for the current route. May be a string of multiple classes. |
+| **linkClass**    | null                  | Class(es) to add to link 'a' tags.                                                                              |
+| **linkTag**      | "li"                  | Which tag to use for link containers.                                                                           |
+| **linkTagClass** | null                  | Class(es) to add to linkTag tags.                                                                               |
+| **loadingHTML**  | `"<p>Loading...</p>"` | Default content while a page is loading.                                                                        |
+| **mainID**       | "main-container"      | ID of the element where pages should be added.                                                                  |
+| **navID**        | "nav-list"            | ID of the element where link tags should be added.                                                              |
+| **pageClass**    | null                  | Class(es) to add to page containers.                                                                            |
+| **pageTag**      | "div"                 | Which tag to use for page containers.                                                                           |
 
 ### hafcaf.addRoute()
 
 addRoute is the method to use when you wish to add a route for hafcaf to keep track of. It takes a configuration object, all properties of which are optional except for `id`.
 
-#### addRoute Options
+#### addRoute() Options
 
-**Option** | **Description**
---- | ---
-**id** | The identifier to be used for this route. **Required**
-**linkLabel** | What text to use when creating a menu item for this route. A menu item will not be created if a linkLabel is not provided.
-**linkTagClass** | What css classnames to give to the menu item container for this route.
-**linkLabelClass** | What css classnames to give to the actual link inside the menu item container for this route.
-**pageClass** | What css classnames to give to the page for this route.
-**innerHTML** | The content of the page. If not provided, will default to config.loadingHTML. Can be set or overwritten later using hafcaf.updateRoute().
-**onRender** | A function which will be called each time this route is rendered (made active). Can include multiple functions within itself, if desired. When composing your onRender, keep in mind to take advantage of the hafcaf.listeners collection, which can be used to hold removeEventListener calls and other functions you would like to run when hafcaf switches away from this route.
+| **Option**         | **Description**                                                                                                                                                                                                                                                                                                                                                                     |
+| ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **id**             | The identifier to be used for this route. **Required**                                                                                                                                                                                                                                                                                                                              |
+| **linkLabel**      | What text to use when creating a menu item for this route. A menu item will not be created if a linkLabel is not provided.                                                                                                                                                                                                                                                          |
+| **linkTagClass**   | What css classnames to give to the menu item container for this route.                                                                                                                                                                                                                                                                                                              |
+| **linkLabelClass** | What css classnames to give to the actual link inside the menu item container for this route.                                                                                                                                                                                                                                                                                       |
+| **pageClass**      | What css classnames to give to the page for this route.                                                                                                                                                                                                                                                                                                                             |
+| **innerHTML**      | The content of the page. If not provided, will default to config.loadingHTML. Can be set or overwritten later using hafcaf.updateRoute().                                                                                                                                                                                                                                           |
+| **onRender**       | A function which will be called each time this route is rendered (made active). Can include multiple functions within itself, if desired. When composing your onRender, keep in mind to take advantage of the hafcaf.listeners collection, which can be used to hold removeEventListener calls and other functions you would like to run when hafcaf switches away from this route. |
+
+### hafcaf.init()
+
+The `init()` function assigns its config object as the config (defaults) for hafcaf. Though it's recommended to only change the individual values needed, this option is provided in case you wish to change several or all values at once.
+
+`init()` additionally sets up a `"hashchange"` event listener on the `window` object, so that the `routeChange()` function will be called when the route changes. Finally, `init()` will set the hash to the `defaultRouteID` if it has not already been set (for instance, when following a link to a hafcaf site or refreshing a page) and will then call `hafcaf.routeChange()` to make sure the pertinent routines are executed.
+
+#### init() config param
+
+See the configuration options object above.
+
+### hafcaf.routeChange()
+
+`routeChange()` is a function called by `hafcaf` everytime a route is changed. You likely will not ever need to call it directly.
+
+The first thing it does is check to make sure the route desired is being tracked by hafcaf already. If it is, then the next step is to remove the `activeClass` from any existing elements that might have it. Third, if there are any functions in `hafcaf.exitFunctions`, then call those. Fourthly, find the menu item for the new active route and make it active. Finally, if the new route has an `onRender` function registered, call it.
+
+### hafcaf.updateRoute()
+
+`updateRoute()` is used - naturally - to update a route's content. In addition to the page's content, one can also update the route's link's `innerHTML` and the route's `onRender` function. `updateRoute()` calls `routeChange()` at the end if the user is currently viewing the route that was just updated.
+
+### updateRoute() Options
+
+| **Option**    | **Description**                                                                    |
+| ------------- | ---------------------------------------------------------------------------------- |
+| **id**        | The id attribute of the route you wish to update. **Required**                     |
+| **linkHTML**  | New html that will replace the current html inside this route's link's container.  |
+| **innerHTML** | New html that will replace the currrent html inside this route's page's container. |
+| **onRender**  | A new function to replace any previous `onRender` function for this route.         |
 
 ## Licensing
 
@@ -266,7 +374,7 @@ The Unlicense, but if you mention me that'd be nice.
 
 ## Contributing
 
-I'll gladly accept questions, comments, suggestions, and pull requests. Keep in mind that this framework is intended to be used cross-browser, without the need for compilation or transpilation. For this reason, features that are not yet supported by the "big 4" browsers (Chrome, Edge, Firefox, and Mobile Safari/Desktop Safari) are not allowed at this time.
+I'll gladly accept questions, comments, suggestions, and pull requests. Keep in mind that this library is intended to be used cross-browser, without the need for compilation or transpilation. For this reason, features that are not yet supported by the "big 4" browsers (Chrome, Edge, Firefox, and Mobile Safari/Desktop Safari) are not allowed at this time.
 
 ## Contributors
 
