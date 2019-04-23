@@ -199,8 +199,10 @@ var hafcaf = {
     if (linkEl) linkEl.classList.add(activeClass);
 
     // If the route has an "onRender" callback, call it
-
     if (route.onRender !== undefined) route.onRender();
+
+    // Last but not least, make sure the hash location gets updated in case of redirection
+    window.location.hash = route.id;
   },
 
   /**

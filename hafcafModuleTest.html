@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>hafcaf Test</title>
+    <link rel="stylesheet" href="hafcaf.css" />
+  </head>
+  <body>
+    <main id="main-container">
+      <section id="subroutes">
+        <h1>Subroutes</h1>
+        <a href="#subroutes/a">Subroute A</a>
+        <a href="#subroutes/b">Subroute B</a>
+        <a href="#subroutes/c">Subroute C</a>
+      </section>
+      <section id="subroutes/a">
+        <p>This is the A section. Alphabet eat your heart out.</p>
+      </section>
+      <section id="subroutes/b">
+        <p>This is the B section. Bouncing baby bok choys.</p>
+      </section>
+      <section id="subroutes/c">
+        <p>This is the C section. Over there is Sandy Bottoms.</p>
+      </section>
+      <section id="home">
+        <h1>Home</h1>
+        <a href="#counter">Counter Test</a>
+        <a href="#subroutes">Subroute Testing</a>
+      </section>
+    </main>
+    <script type="module">
+      import hafcaf from "./hafcaf-module.js";
+
+      hafcaf.init();
+
+      const routes = [{ id: "home" }, { id: "subroutes" }, { id: "subroutes/b" }];
+
+      routes.forEach(route => hafcaf.addRoute(route));
+
+      hafcaf.addRoute({
+        id: "counter",
+        innerHTML: `
+          <section>
+            <span id='counter__display'>0</span>
+            <button id='counter__button'>Add 1</button>
+            <a href='#home'>Go home</a>
+          </section>`,
+        onRender: function() {
+          // storing the counter var globally for simplicity’s sake in this demo
+          window.counter = 0;
+
+          // create the event handler
+          function incrementCounter() {
+            counter++;
+            document.getElementById("counter__display").innerHTML = counter;
+          }
+
+          // setup the listener
+          const button = document.getElementById("counter__button");
+          button.addEventListener("click", incrementCounter, false);
+
+          // create a disposer to remove the event listener on exit
+          const disposer = function() {
+            button.removeEventListener("click", incrementCounter, false);
+          };
+          hafcaf.exitFunctions.push(disposer);
+        }
+      });
+    </script>
+  </body>
+</html>
