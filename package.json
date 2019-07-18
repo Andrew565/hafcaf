@@ -1,14 +1,19 @@
 {
   "name": "hafcaf",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "The no-framework SPA solution; when you only want a little javascript in your app.",
-  "main": "hafcaf-module.js",
+  "main": "hafcaf.min.js",
+  "files": [
+    "hafcaf-barista.js",
+    "hafcaf-tamper.js"
+  ],
   "directories": {
     "doc": "docs"
   },
   "scripts": {
-    "build-es": "terser hafcaf.js -c -m -o hafcaf.min.js",
-    "build-module": "terser hafcaf-module.js -c -m -o hafcaf-module.min.js"
+    "build-docs": "jsdoc index.js -d docs",
+    "build-module": "terser index.js -c -m -o hafcaf.min.js",
+    "build-es5": "terser hafcaf-es5.js -c -m -o hafcaf-es5.min.js"
   },
   "repository": {
     "type": "git",
