@@ -16,6 +16,8 @@ There's no complicated DSL (domain-specific language) here, no hoops and loops t
 
 Before I continue, `hafcaf` is heavily inspired by [this article by Heydon Pickering](https://www.smashingmagazine.com/2015/12/reimagining-single-page-applications-progressive-enhancement/).
 
+If you like what I'm doing, would you consider [buying me a ko-fi](https://ko-fi.com/C0C6ZHE7)? Thanks!
+
 - [Introduction](#introduction)
 
 - [How the Magic Happens](#how-the-magic-happens)
