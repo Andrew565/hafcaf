@@ -34,6 +34,6 @@
   },
   "homepage": "https://github.com/Andrew565/hafcaf#readme",
   "devDependencies": {
-    "terser": "^3.17.0"
+    "terser": "^4.8.1"
   }
 }
