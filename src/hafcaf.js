@@ -1,5 +1,5 @@
 /**
- * hafcaf is initialized as a module using a plain old JavaScript object (POJO). This embarassingly simple setup - which does not hide any private functions or variables - was chosen for its simplicity and the fact that everything was meant to be publicly accessible.
+ * hafcaf is initialized as a module using a plain old JavaScript object (POJO).
  * @module hafcaf
  */
 const hafcaf = {
@@ -15,35 +15,34 @@ const hafcaf = {
    */
 
   /**
-   * @member {route[]} routes
-   * @static
+   * @type {{ [key: string]: route }}
    * @description A collection of all of the routes registered with hafcaf.
    */
-  routes: [],
+  routes: {},
 
   /**
    * @typedef {Object} config
    * @prop {string} activeClass="active" - What classname(s) to apply to the link container for the current route.
-   * @prop {string} [linkClass]=null - What classname(s) to add to the 'a' tags used to create menu items.
+   * @prop {string | undefined} [linkClass] at classname(s) to add to the 'a' tags used to create menu items.
    * @prop {string} linkTag="li" - What tag to use for the link container for a route's menu item.
-   * @prop {string} [linkTagClass]=null - What classname(s) to give to the menu item container for this route.
+   * @prop {string | undefined} [linkTagClass] - What classname(s) to give to the menu item container for this route.
    * @prop {string} loadingHTML - The default HTML to display when a route hasn't yet been updated with its real content. Useful when loading routes dynamically using AJAX or Fetch.
    * @prop {string} mainID="main-container" - The id attribute of the container to which pages should be added.
    * @prop {string} navID="nav-list" - The id attribute of the container to which menu items should be added.
-   * @prop {string} [pageClass]=null - What css classnames to give to route pages.
+   * @prop {string | undefined} [pageClass] - What css classnames to give to route pages.
    * @prop {string} pageTag="div" - What tag to use when creating a page's container.
    */
 
-  /** @member {config} config */
+  /** @type {config} */
   config: {
     activeClass: "active",
-    linkClass: null,
+    linkClass: undefined,
     linkTag: "li",
-    linkTagClass: null,
+    linkTagClass: undefined,
     loadingHTML: "<p>Loading...</p>",
     mainID: "main-container",
     navID: "nav-list",
-    pageClass: null,
+    pageClass: undefined,
     pageTag: "div"
   },
 
@@ -57,8 +56,8 @@ const hafcaf = {
    * addRoute() is the method to use when you wish to add a route for hafcaf to keep track of. It takes a configuration object, all properties of which are optional except for `id`.
    * @param {route} newRoute
    */
-  addRoute: newRoute => {
-    let id = newRoute.id;
+  addRoute(newRoute) {
+    const id = newRoute.id;
 
     // Check if a route already exists with the given ID
     if (this.routes[id] !== undefined) {
@@ -73,23 +72,27 @@ const hafcaf = {
 
     // Add the route to the navigation menu if linkHTML provided
     if (newRoute.linkHTML) {
-      var newEl = document.createElement(this.config.linkTag);
+      const newEl = document.createElement(this.config.linkTag);
 
-      if (newRoute.linkTagClass || this.config.linkTagClass) {
-        newEl.classList.add(newRoute.linkTagClass || this.config.linkTagClass);
+      const linkTagClass = newRoute.linkTagClass || this.config.linkTagClass;
+
+      if (linkTagClass) {
+        newEl.classList.add(linkTagClass);
       }
 
-      var newLink = document.createElement("a");
+      const newLink = document.createElement("a");
       newLink.href = `#${id}`;
       newLink.innerHTML = newRoute.linkHTML;
 
       // Add classes to the link, if present
-      if (newRoute.linkClass || this.config.linkClass) {
-        newLink.classList.add(newRoute.linkClass || this.config.linkClass);
+      const linkClass = newRoute.linkClass || this.config.linkClass;
+
+      if (linkClass) {
+        newLink.classList.add(linkClass);
       }
 
       newEl.appendChild(newLink);
-      document.getElementById(this.config.navID).appendChild(newEl);
+      document.getElementById(this.config.navID)?.appendChild(newEl);
     }
 
     // Check if the ID already exists in the DOM (i.e. adding an existing page to the dom)
@@ -97,19 +100,21 @@ const hafcaf = {
 
     if (doesNotExist) {
       // Create a new page
-      var newEl = document.createElement(this.config.pageTag);
+      const newEl = document.createElement(this.config.pageTag);
       newEl.id = id;
 
       // Add classes to the page, if present
-      if (newRoute.pageClass || this.config.pageClass) {
-        newEl.classList.add(newRoute.pageClass || this.config.pageClass);
+      const pageClass = newRoute.pageClass || this.config.pageClass;
+
+      if (pageClass) {
+        newEl.classList.add(pageClass);
       }
 
       // If this new route provides html, add it to the DOM, else use the loadingHTML
       newEl.innerHTML = newRoute.innerHTML || this.config.loadingHTML;
 
       // Add page to the DOM
-      document.getElementById(this.config.mainID).appendChild(newEl);
+      document.getElementById(this.config.mainID)?.appendChild(newEl);
     }
 
     // Get the new hash, which is the route to be rendered
@@ -127,8 +132,8 @@ const hafcaf = {
    * updateRoute() is used - naturally - to update a route's content. In addition to the page's content, one can also update the route's link's innerHTML and the route's onRender function. updateRoute() calls routeChange() at the end if the user is currently viewing the route that was just updated.
    * @param {route} routeToUpdate
    */
-  updateRoute: routeToUpdate => {
-    let id = routeToUpdate.id;
+  updateRoute(routeToUpdate) {
+    const id = routeToUpdate.id;
     const route = this.routes[id];
 
     if (!route) {
@@ -141,7 +146,7 @@ const hafcaf = {
       const linkEl = document.querySelector(`a[href='#${id}']`);
 
       // Then, update the link's innerHTML with the new content
-      linkEl.innerHTML = routeToUpdate.linkHTML;
+      if (linkEl) linkEl.innerHTML = routeToUpdate.linkHTML;
     }
 
     if (routeToUpdate.innerHTML) {
@@ -149,7 +154,7 @@ const hafcaf = {
       const pageEl = document.getElementById(id);
 
       // Then, update the page's innerHTML with the new content
-      pageEl.innerHTML = routeToUpdate.innerHTML;
+      if (pageEl) pageEl.innerHTML = routeToUpdate.innerHTML;
     }
 
     if (routeToUpdate.onRender) route.onRender = routeToUpdate.onRender;
@@ -163,7 +168,7 @@ const hafcaf = {
   /**
    * routeChange() is a function called by hafcaf everytime a route is changed. You likely will not ever need to call it directly. The first thing it does is check to make sure the route desired is being tracked by hafcaf already. If it is, then the next step is to remove the `activeClass` from any existing elements that might have it. Third, if there are any functions in {@link hafcaf.exitFunctions}, then call those. Fourthly, find the menu item for the new active route and make it active. Finally, if the new route has an `onRender` function registered, call it.
    */
-  routeChange: () => {
+  routeChange() {
     // Get the new hash, which is the route to be rendered
     const routeID = location.hash.slice(1);
 
@@ -176,14 +181,14 @@ const hafcaf = {
 
     // Remove any existing active classes upon route changing
     const { activeClass } = this.config;
-    for (var el of document.getElementsByClassName(activeClass)) {
+    for (const el of document.getElementsByClassName(activeClass)) {
       el.classList.remove(activeClass);
     }
 
     // Iterate through the exitFunctions collection and call any functions found there
-    for (var len = this.exitFunctions.length; len > 0; len--) {
+    while (this.exitFunctions.length > 0) {
       // Dispose all of the registered exit functions
-      this.exitFunctions.pop()();
+      this.exitFunctions.pop()?.();
     }
 
     // Next, find the new route's 'a' tag by looking up the link's href
@@ -196,7 +201,9 @@ const hafcaf = {
     if (route.onRender !== undefined) route.onRender();
 
     // Last but not least, make sure the hash location gets updated in case of redirection
-    window.location.hash = route.id;
+    if (window.location.hash.slice(1) !== route.id) {
+      window.location.hash = route.id;
+    }
   },
 
   /**
@@ -205,8 +212,8 @@ const hafcaf = {
    * init() additionally sets up a "hashchange" event listener on the window object, so that the routeChange() function will be called when the route changes. Finally, init() will set the hash to the defaultRouteID if it has not already been set (for instance, when following a link to a hafcaf site or refreshing a page) and will then call hafcaf.routeChange() to make sure the pertinent routines are executed.
    * @param {config} config
    */
-  init: config => {
-    if (config) this.config = config;
+  init(config) {
+    if (config) this.config = {...this.config, ...config};
 
     // Add a global listener for 'hashchange', since this framework relies on hash-based routing
     window.addEventListener("hashchange", () => {

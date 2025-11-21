@@ -1,56 +1,83 @@
+<!DOCTYPE html>
 <html>
-
-<head>
-  <title>My Awesome Hafcaf App</title>
-  <link rel="stylesheet" href="hafcaf.css">
-</head>
-
-<body>
-  <nav role="navigation">
+  <head>
+    <title>hafcaf Test</title>
+    <link rel="stylesheet" href="hafcaf.css" />
+  </head>
+  <body>
+    <nav role="navigation">
     <ul id="nav-list">
       <li>
         <a href="#home">Home</a>
       </li>
       <li>
-        <a href="#another-view">Page 2</a>
+        <a href="#counter">Counter</a>
+      </li>
+      <li>
+        <a href="#subroutes">Subroutes</a>
       </li>
     </ul>
   </nav>
-  <main id="main-container" role="main">
-    <div id="another-view">
-      <h1>Page 2</h1>
-      <p>This is another view.</p>
-    </div>
-    <div id="home">
-      <h1>Home</h1>
-      <p>Static content is the best content.</p>
-    </div>
-  </main>
-  <script src="hafcaf.js" type="text/javascript"></script>
-  <script type="text/javascript">
-    var anotherView = {
-      id: 'another-view',
-      onRender: function () {
-        console.log('this view is "another-view"');
-      }
-    };
-    hafcaf.addRoute(anotherView);
+    <main id="main-container">
+      <section id="subroutes">
+        <h1>Subroutes</h1>
+        <a href="#subroutes/a">Subroute A</a>
+        <a href="#subroutes/b">Subroute B</a>
+        <a href="#subroutes/c">Subroute C</a>
+      </section>
+      <section id="subroutes/a">
+        <p>This is the A section. Alphabet eat your heart out.</p>
+      </section>
+      <section id="subroutes/b">
+        <p>This is the B section. Bouncing baby bok choys.</p>
+      </section>
+      <section id="subroutes/c">
+        <p>This is the C section. Over there is Sandy Bottoms.</p>
+      </section>
+      <section id="home">
+        <h1>Home</h1>
+        <a href="#counter">Counter Test</a>
+        <a href="#subroutes">Subroute Testing</a>
+      </section>
+    </main>
+    <script type="module">
+      import hafcaf from "./dist/hafcaf.min.js";
 
-    var exampleDynamicView = {
-      id: 'page-3',
-      linkLabel: "Page 3",
-      innerHTML: "<h1>Page 3</h1><p>This page was added dynamically at run-time. It could have been loaded via fetch or AJAX if desired.</p><button id='backHomeButton'>Go back to Home page</button>",
-      onRender: function () {
-        console.log('page 3 rendered');
+      hafcaf.init();
 
-        // demo of adding event listeners
-        document.getElementById('backHomeButton').addEventListener('click', function () {
-          window.location.hash = 'home';
-        });
-      }
-    };
-    hafcaf.addRoute(exampleDynamicView);
-  </script>
-</body>
+      const routes = [{ id: "home" }, { id: "subroutes" }, { id: "subroutes/a" }, { id: "subroutes/b" }, { id: "subroutes/c" }];
 
+      routes.forEach(route => hafcaf.addRoute(route));
+
+      hafcaf.addRoute({
+        id: "counter",
+        innerHTML: `
+          <section>
+            <span id='counter__display'>0</span>
+            <button id='counter__button'>Add 1</button>
+            <a href='#home'>Go home</a>
+          </section>`,
+        onRender: function() {
+          // storing the counter var globally for simplicity’s sake in this demo
+          window.counter = 0;
+
+          // create the event handler
+          function incrementCounter() {
+            counter++;
+            document.getElementById("counter__display").innerHTML = counter;
+          }
+
+          // setup the listener
+          const button = document.getElementById("counter__button");
+          button.addEventListener("click", incrementCounter, false);
+
+          // create a disposer to remove the event listener on exit
+          const disposer = function() {
+            button.removeEventListener("click", incrementCounter, false);
+          };
+          hafcaf.exitFunctions.push(disposer);
+        }
+      });
+    </script>
+  </body>
 </html>

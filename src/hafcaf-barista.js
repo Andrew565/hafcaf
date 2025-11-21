@@ -1,7 +1,11 @@
 /**
+ * @typedef {import("./hafcaf.js").default} hafcaf
+ */
+
+/**
  * @param {{ id: string; [x: string]: any;}} page
  * @param {?string} path
- * @param {object} hfcf
+ * @param {hafcaf} hfcf
  */
 const Barista = (page, path, hfcf) => {
   /**
@@ -11,15 +15,22 @@ const Barista = (page, path, hfcf) => {
     // lookup either at the path provided or relative to the home page the page whose name matches the pageObj id
     const pagePath = path || "pages";
     const res = await fetch(`${pagePath}/${pageObj.id}.html`);
-    const innerHTML = (await res.ok) ? res.text() : Promise.resolve("");
+    const innerHTML = res.ok ? await res.text() : "";
     return { ...page, innerHTML }; // return as an object to be processed by addRoute
   };
 
-  fetchPage(page).then(page => hfcf.addRoute(page));
+  fetchPage(page).then(pageData => hfcf.addRoute(pageData));
 };
 
 export default Barista;
 
+/**
+ * @param {hafcaf} hfcf
+ */
 export function HireBarista(hfcf) {
+  /**
+   * @param {{ id: string; [x: string]: any;}} page
+   * @param {?string} path
+   */
   hfcf.Barista = (page, path) => Barista(page, path, hfcf);
 }

@@ -4,7 +4,7 @@ _The No-Framework SPA Solution_
 
 ## Introduction
 
-`hafcaf` is an extremely minimal (less than 2kb) single-page application (SPA) library, designed for people who want to rapidly create websites and apps without having to learn a whole new way to do so.
+`hafcaf` is an extremely minimal (less than 3kb) single-page application (SPA) library, designed for people who want to rapidly create websites and apps without having to learn a whole new way to do so.
 
 There's no complicated DSL (domain-specific language) here, no hoops and loops to jump through to get up and running. If you know plain HTML, CSS, and JavaScript and can follow a tiny bit of instruction, you can be creating a SPA in less than five minutes.
 
@@ -88,17 +88,23 @@ Using `hafcaf`, if you point your browser to `https://www.yourdomain.com/#sectio
 
 ## Installation
 
-Take the CSS and JS files provided here and stick them in a folder (`npm install` coming soon).
+1. Clone the repository.
+2. Run `npm install` to install dependencies.
+3. Run `npm run build` to build the project. The output will be in the `dist` directory.
 
 ## Usage
 
 ### Adding to your page
 
-Add the CSS file to your `<head>` using a standard `<link>` like this: `<link rel="stylesheet" href="../path/to/hafcaf.css">`. As you'll see in the next section, `hafcaf`'s routing ability will work without adding the `hafcaf.js` file. If you do choose to add the JS file, add it to the page's `<body>` section before the closing `</body>` tag. I recommend near the bottom, but above any other custom javascript (if that custom code makes use of hafcaf).
+Add the CSS file to your `<head>` using a standard `<link>` like this: `<link rel="stylesheet" href="../path/to/hafcaf.css">`.
 
-`hafcaf` comes in two varieties: one that supports ES6 Modules (`hafcaf-module.min.js`), and one that doesn't (`hafcaf.min.js`). If you need to support Internet Explorer or if you don't want to use ES6 Modules, then go for the non-module code, which will add `hafcaf` to the global scope (I know it's bad practice, but so is supporting IE at this point).
-
-If you use the modular version, you can do `import hafcaf from "../path/to/hafcaf"` or `var hafcaf = require('../path/to/hafcaf');`. Once I get this published to NPM you'll be able to drop the path parts.
+Import `hafcaf` from the source or the built module.
+```html
+<script type="module">
+  import hafcaf from "./dist/hafcaf.min.js"; // or "./src/index.js" for development
+  hafcaf.init();
+</script>
+```
 
 ### Setting up your page
 
@@ -301,14 +307,9 @@ There are two ways to change the default configuration options. If you want to c
 If you wish to change several options all at once, you can merge your changes like this:
 
 ```javascript
-// ES2018 (Doesn't work in Edge or IE browsers)
 const oldConfig = hafcaf.config;
 const newConfig = {(your changes)};
 hafcaf.config = {...oldConfig, newConfig};
-
-// ES6 (Supports Edge 12+, but still not IE)
-// define newConfig like above
-Object.assign(hafcaf.config, newConfig);
 ```
 
 Below are the available configuration options along with their default values.
@@ -376,7 +377,7 @@ The Unlicense, but if you mention me that'd be nice.
 
 ## Contributing
 
-I'll gladly accept questions, comments, suggestions, and pull requests. Keep in mind that this library is intended to be used cross-browser, without the need for compilation or transpilation. For this reason, features that are not yet supported by the "big 4" browsers (Chrome, Edge, Firefox, and Mobile Safari/Desktop Safari) are not allowed at this time.
+I'll gladly accept questions, comments, suggestions, and pull requests.
 
 ## Contributors
 
