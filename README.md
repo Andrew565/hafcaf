@@ -191,11 +191,9 @@ hafcaf.addRoute(anotherView);
 
 It really is that easy. There are more details on all of the configuration options for the `addRoute` method in the API section below. What we do here is add the ID for the page to the `routes` registry. `hafcaf` internally has a `routeChange` function that will update the navigation links whenever the route changes (e.g. from `#home` to `#another-view`). You only have to add routes that are in addition to the `#home` route, as `hafcaf` assumes you will always have at least that (though the ID of the home route can be changed in the `hafcaf` configuration, see below).
 
-#### `addRoute` and `updateRoute` with Dynamic Content
+#### Loading Dynamic Content with Barista
 
-Now let’s look at adding pages that aren’t loaded statically with your `index.html` file. The process basically looks like this: create a ‘page object’ with the basic information about your page, register it with `hafcaf` using the `addRoute` function, then go and fetch your page’s content in whichever way you like (I recommend `fetch`), and then finally call `updateRoute` with the actual content of the page.
-
-It may seem like a lot of steps, but it’s easier than you might think. `hafcaf` was designed to handle ‘asynchronous’ content in a very graceful way, that will fit into any flow or framework with ease. Starting with the page from the previous section, let’s add a page 3.
+Now let’s look at adding pages that aren’t loaded statically with your `index.html` file. With hafcaf's Barista module, you can use the `fetch` API to load pages dynamically, and then use `updateRoute` to inject the content into the page. `hafcaf` and Barista were designed to handle ‘asynchronous’ content in a very graceful way, that will fit into any flow or framework with ease. Starting with the page from the previous section, let’s add a page 3.
 
 ```html
 <!-- page3.html -->
@@ -207,20 +205,28 @@ It may seem like a lot of steps, but it’s easier than you might think. `hafcaf
 
 Note that there’s no extra `DOCTYPE`, `head`, or `body` sections, only the content we want for the third page. This is because we’re going to inject it directly into the existing page, so it doesn’t need all the extra definitions of a normal html page.
 
-Then, in your site’s main JavaScript file (or even in the index.html, if you want), setup the `hafcaf.addRoute()` function similarly to above, but with an extra (and optional) `linkLabel` configuration option specified:
+Then, in your site’s main JavaScript file (or even in the index.html, if you want), setup the `Barista` module to load the page object, but with an extra (and optional) `linkLabel` configuration option specified:
 
 ```javascript
-var exampleDynamicView = {
+const exampleDynamicView = {
   id: "page-3",
   linkLabel: "Page 3"
 };
 
-hafcaf.addRoute(exampleDynamicView);
+const Barista = HireBarista(hafcaf);
+Barista(exampleDynamicView);
 ```
 
-This `linkLabel` property tells `hafcaf` to add a new entry to the page's menu with the label we specified, "Page 3". This extra property is optional if you want to define your menu a different way, or if you don't have a menu. See the full API section below for all of the configuration options, including how to control how menu items are rendered.
+Barista takes two arguments:
 
-Now that we have reserved a place for the new page, the next step is to go and fetch it from the server. You can use any method you like to do this, but here's how I did it on my website. For [andrewthecreator.com](https://andrewthecreator.com), I chose to make all of the pages load dynamically (mostly for the fanciness of it). So I created an array of page objects, then looped over them; adding each one, in turn, to the site.
+1. The page object to be added to the site
+2. The path to the page's HTML file (relative to the root of the site)
+
+The path is optional, and defaults to `pages/`. Barista also assumes that the page's HTML file is named the same as the page's ID, so in this case, it would look for `pages/page-3.html`.
+
+The `linkLabel` property tells `hafcaf` to add a new entry to the page's menu with the label we specified, "Page 3". This extra property is optional if you want to define your menu a different way, or if you don't have a menu. See the full API section below for all of the configuration options, including how to control how menu items are rendered.
+
+For my old website, I chose to make all of the pages load dynamically (mostly for the fanciness of it). So I created an array of page objects, then looped over them; adding each one, in turn, to the site.
 
 ```javascript
 // Array of page objects to be fetched and processed by hafcaf
@@ -232,27 +238,11 @@ const pages = [
   { id: "art", linkLabel: "<i class='fas fa-palette'></i>Art" }
 ];
 
+const Barista = HireBarista(hafcaf);
+
 pages.forEach(page => {
-  hafcaf.addRoute(page);
-  fetchPage(page).then(page => hafcaf.updateRoute(page));
+  Barista(page);
 });
-
-// Fetches page contents from the 'pages' directory
-function fetchPage(pageObj) {
-  // lookup relative to the home page the page whose name matches the pageObj id
-  return fetch(`pages/${pageObj.id}.html`)
-    .then(res => res.text()) // process it as text
-    .then(innerHTML => ({ innerHTML, id: pageObj.id })); // return as an object to be processed by updateRoute
-}
-```
-
-If you want to add just a single page at a time, that last part is what you'll need. Here's the simpler version:
-
-```javascript
-fetch("https://yourserver.it/pages/page3.html")
-  .then(response => response.text())
-  .then(innerHTML => ({ innerHTML, id: "page-3" }))
-  .then(page => hafcaf.updateRoute(page));
 ```
 
 ### The `onRender` function and `exitFunctions` collection
