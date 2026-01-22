@@ -30,7 +30,7 @@
   },
   "homepage": "https://github.com/Andrew565/hafcaf#readme",
   "devDependencies": {
-    "esbuild": "^0.19.0",
+    "esbuild": "^0.25.0",
     "jsdoc": "^4.0.2"
   }
 }
